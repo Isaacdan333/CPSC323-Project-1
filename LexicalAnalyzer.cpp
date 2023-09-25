@@ -72,6 +72,11 @@ int main() {
         return 1;
     }
 
+    // reads input string form the input file
+    string input_str;
+    getline(inputFile, input_str);
+
+    // will print tokens to output.txt
     ofstream outfile("output.txt");
     outfile << "+------------+---------------------+" << endl;
     outfile << "|   Token    |       Lexeme        |" << endl;
