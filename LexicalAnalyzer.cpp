@@ -81,6 +81,7 @@ int main() {
     outfile << "+------------+---------------------+" << endl;
     outfile << "|   Token    |       Lexeme        |" << endl;
     outfile << "+------------+---------------------+" << endl;
+    // use a for loop to input the tokens in an orderly fashion
 
     // Works from here
     // ....
