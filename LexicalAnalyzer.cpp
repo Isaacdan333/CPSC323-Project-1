@@ -72,6 +72,11 @@ int main() {
         return 1;
     }
 
+    ofstream outfile("output.txt");
+    outfile << "+------------+---------------------+" << endl;
+    outfile << "|   Token    |       Lexeme        |" << endl;
+    outfile << "+------------+---------------------+" << endl;
+
     // Works from here
     // ....
 }
