@@ -60,6 +60,69 @@ vector<Lexical> tokenize(const string& code) {
 
     // Works from here
     // ....
+    
+    //break the "code" string into smaller pieces using " " as delimiter.
+    int start = 0;
+    int end = code.find(" ");
+
+    //While not at end of "code" string
+    while (end != -1)
+    {
+
+        //save the substring as "lexeme" and create a Lexical object
+        string lexeme = code.substr(start, end-start);
+        Lexical lex;
+        
+        //If the substring is a keyword, push the string as a Keyword into "tokens"
+        if (regex_match(lexeme, keyword_regex))
+        {
+            lex.token = Keyword;
+            lex.lexeme = lexeme;
+            tokens.push_back(lex);
+        }
+
+        //If the substring is a separator, push the string as a Separator into "tokens"
+        else if (regex_match(lexeme, separator_regex))
+        {
+            lex.token = Separator;
+            lex.lexeme = lexeme;
+            tokens.push_back(lex);
+        }
+
+        //If the substring is a identifier, push the string as a Identifier into "tokens"
+        else if (regex_match(lexeme, identifier_regex))
+        {
+            lex.token = Identifier;
+            lex.lexeme = lexeme;
+            tokens.push_back(lex);
+        }
+
+        //If the substring is a real, push the string as a Real into "tokens"
+        else if (regex_match(lexeme, realnumber_regex))
+        {
+            lex.token = Real;
+            lex.lexeme = lexeme;
+            tokens.push_back(lex);
+        }
+
+        //If the substring is a operator, push the string as a Operator into "tokens"
+        else if (regex_match(lexeme, operator_regex))
+        {
+            lex.token = Operator;
+            lex.lexeme = lexeme;
+            tokens.push_back(lex);
+        }
+
+        //If the substring is unknown, push the string as a Unknown into "tokens"
+        else
+        {
+            lex.token = Unknown;
+            lex.lexeme = lexeme;
+            tokens.push_back(lex);
+        }
+    }
+
+    return tokens;
 }
 
 // Main function 
@@ -72,6 +135,17 @@ int main() {
         return 1;
     }
 
+    // reads input string form the input file
+    string input_str;
+    getline(inputFile, input_str);
+    vector<Lexical> Tokens = tokenize(input_str);
+
+    // will print tokens to output.txt
+    ofstream outfile("output.txt");
+    outfile << "+------------+---------------------+" << endl;
+    outfile << "|   Token    |       Lexeme        |" << endl;
+    outfile << "+------------+---------------------+" << endl;
+
     // Works from here
     // ....
 }
@@ -80,7 +154,7 @@ int main() {
 //input_scode.txt
 
 /*
-while(t<upper)s=22.00;
+while ( t < upper ) s = 22.00;
 
 output:
 Token       Lexeme
