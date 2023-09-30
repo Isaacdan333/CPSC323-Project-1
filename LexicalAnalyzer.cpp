@@ -11,28 +11,10 @@
 #include <fstream>
 #include <string>
 #include <regex>
+#include <vector>
 
 using namespace std;
 
-//Lexer Pseudocode
-/*
-function lexer()
-{
-    repeat
-        getchar();
-        if input char terminates a token
-            AND it is an accepting state then
-                isolate the token/lexeme
-                decrement the CP if necessary
-        else lookup FSM (current state, input char);
-    until (token found) or (no more input)
-
-    if token found then
-        return(token)
-}
-*/
-
-// Our code
 // Define different types of token
 enum TokenType {
     Keyword,
@@ -55,14 +37,56 @@ vector<Lexical> tokenize(const string& code) {
     regex keyword_regex("while|if|else|for");
     regex separator_regex("[(),;{}]");
     regex identifier_regex("[a-zA-Z_][a-zA-Z0-9_]*");
-    regex realnumber_regex("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?");
-    regex operator_regex("[+\\-*/=]");
+    regex realnumber_regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+    regex operator_regex("[+\\-*/=<>,]");
 
-    // Works from here
-    // ....
+    // Initialize start and end positions
+    int start = 0;
+    int end = 0;
+
+    while (end < code.length()) {
+        // Find the next space or end of the string
+        end = code.find(" ", start);
+
+        // If no space is found, set end to the end of the string
+        if (end == string::npos) {
+            end = code.length();
+        }
+
+        // Extract the substring
+        string lexeme = code.substr(start, end - start);
+        Lexical lex;
+
+        // Check for token type
+        if (regex_match(lexeme, keyword_regex)) {
+            lex.token = Keyword;
+        } 
+        else if (regex_match(lexeme, separator_regex)) {
+            lex.token = Separator;
+        } 
+        else if (regex_match(lexeme, identifier_regex)) {
+            lex.token = Identifier;
+        } 
+        else if (regex_match(lexeme, realnumber_regex)) {
+            lex.token = Real;
+        } 
+        else if (regex_match(lexeme, operator_regex)) {
+            lex.token = Operator;
+        } 
+        else {
+            lex.token = Unknown;
+        }
+
+        lex.lexeme = lexeme;
+        tokens.push_back(lex);
+
+        // Update start position for the next iteration
+        start = end + 1;
+    }
+
+    return tokens;
 }
 
-// Main function 
 int main() {
     ifstream inputFile;
     inputFile.open("input_scode.txt");
@@ -72,38 +96,46 @@ int main() {
         return 1;
     }
 
-    // reads input string form the input file
-    string input_str;
-    getline(inputFile, input_str);
+    // Read the entire input file into a string
+    string input_str((istreambuf_iterator<char>(inputFile)), istreambuf_iterator<char>());
 
-    // will print tokens to output.txt
+    // Open the output file for writing
     ofstream outfile("output.txt");
-    outfile << "+------------+---------------------+" << endl;
-    outfile << "|   Token    |       Lexeme        |" << endl;
-    outfile << "+------------+---------------------+" << endl;
-    // use a for loop to input the tokens in an orderly fashion
-    
+    outfile << "+-------------------+-------------------+" << endl;
+    outfile << "|       Token       |       Lexeme      |" << endl;
+    outfile << "+-------------------+-------------------+" << endl;
 
-    // Works from here
-    // ....
+    // Tokenize the input string
+    vector<Lexical> tokens = tokenize(input_str);
+
+    // Process and write tokens to the output file
+    for (const Lexical& token : tokens) {
+        string tokenTypeStr;
+
+        switch (token.token) {
+            case Keyword:
+                tokenTypeStr = "Keyword";
+                break;
+            case Separator:
+                tokenTypeStr = "Separator";
+                break;
+            case Identifier:
+                tokenTypeStr = "Identifier";
+                break;
+            case Real:
+                tokenTypeStr = "Real";
+                break;
+            case Operator:
+                tokenTypeStr = "Operator";
+                break;
+            case Unknown:
+                tokenTypeStr = "Unknown";
+                break;
+        }
+        outfile << "|           " << tokenTypeStr << "      |       " << token.lexeme << "      |" << endl;
+    }
+
+    inputFile.close();
+    outfile.close();
+    return 0;
 }
-
-
-//input_scode.txt
-
-/*
-while(t<upper)s=22.00;
-
-output:
-Token       Lexeme
-keyword     while
-separator   (
-identifier  t
-operator    <
-identifier  upper
-separator   )
-identifier  s
-operator    =
-real        22.00
-separator   ;
-*/
