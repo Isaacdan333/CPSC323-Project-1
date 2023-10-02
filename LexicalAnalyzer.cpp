@@ -160,6 +160,7 @@ int main() {
         }
         outputFile << "| " << setw(17) << left << token.lexeme << " | " << endl;
     }
+    outputFile << "+-------------------+-------------------+" << endl;
 
     // Close the output file
     outputFile.close();
