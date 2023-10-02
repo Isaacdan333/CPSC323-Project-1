@@ -1,4 +1,4 @@
-#Lexical Analyzer  
+# Lexical Analyzer  
 
 ## Introduction
   CPSC 323 - Project 1  
