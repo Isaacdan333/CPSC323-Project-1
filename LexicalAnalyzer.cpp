@@ -22,6 +22,9 @@ enum TokenType {
     Identifier,
     Operator,
     Real,
+    Integer,
+    String,
+    Special,
     Unknown
 };
 
@@ -58,7 +61,7 @@ vector<Lexical> lexer(const string& inputCode) {
         }
 
         string lexeme;
-        TokenType tokenType = Unknown;
+        TokenType tokenType;
 
         // Check if the current character is a separator
         if (currentChar == '(' || currentChar == ')' || currentChar == ';' || currentChar == '{' || currentChar == '}') {
@@ -80,7 +83,15 @@ vector<Lexical> lexer(const string& inputCode) {
                 lexeme += currentChar;
                 currentChar = inputCode[++currentPos];
             }
-            tokenType = Real;
+            // Check if the lexeme is an integer or a real number
+            bool isReal = (lexeme.find('.') != std::string::npos);
+            
+            if (isReal) {
+                tokenType = Real;
+            } 
+            else {
+                tokenType = Integer;
+            }
         }
 
         // Check if the current character is a letter (identifier or keyword)
@@ -97,6 +108,36 @@ vector<Lexical> lexer(const string& inputCode) {
             else {
                 tokenType = Identifier;
             }
+        }
+
+        // Check if the current character is a string
+        else if (currentChar == '"') {
+            lexeme += currentChar;
+            currentChar = inputCode[++currentPos];
+            
+            while (currentPos < codeLength && currentChar != '"') {
+                lexeme += currentChar;
+                currentChar = inputCode[++currentPos];
+            }
+            
+            if (currentChar == '"') {
+                lexeme += currentChar;
+                tokenType = String;
+                currentPos++;
+            }
+        }
+
+        // Check if the current character is a special characters
+        else if (currentChar == '!'|| currentChar == '@' || currentChar == '#' || currentChar == '$' || currentChar == '%' || currentChar == '^' || currentChar == '&' || currentChar == '|' || currentChar == '\\') {
+            tokenType = Special;
+            lexeme = currentChar;
+            currentPos++;
+        }
+
+        else {
+            tokenType = Unknown;
+            lexeme = currentChar;
+            currentPos++;
         }
 
         // Add the token to the list
@@ -154,13 +195,21 @@ int main() {
             case Real:
                 outputFile << "Real";
                 break;
+            case Integer:
+                outputFile << "Integer";
+                break;
+            case String:
+                outputFile << "String";
+                break;
+            case Special:
+                outputFile << "Special";
+                break;
             case Unknown:
                 outputFile << "Unknown";
                 break;
         }
         outputFile << "| " << setw(17) << left << token.lexeme << " | " << endl;
     }
-    outputFile << "+-------------------+-------------------+" << endl;
 
     // Close the output file
     outputFile.close();
@@ -168,3 +217,6 @@ int main() {
     cout << "Lexical analysis completed. Results written to 'output.txt'." << endl;
     return 0;
 }
+
+
+
